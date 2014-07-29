@@ -1,0 +1,12 @@
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\TriangulationTopology.exe.config
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\TriangulationTopology.exe
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\TriangulationTopology.pdb
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\DataStructures.dll
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\PointsFileReader.dll
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\Utils.dll
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\DataStructures.pdb
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\PointsFileReader.pdb
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\bin\Release\Utils.pdb
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\obj\Release\TriangulationTopology.csprojResolveAssemblyReference.cache
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\obj\Release\TriangulationTopology.exe
+C:\Users\Roei\Downloads\attachments\TriangulationTopology\TriangulationTopology\obj\Release\TriangulationTopology.pdb

@@ -1,0 +1,14 @@
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\TriangulationTopology.exe.config
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\TriangulationTopology.exe
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\TriangulationTopology.pdb
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\DataStructures.dll
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\PointsFileReader.dll
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\Utils.dll
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\DataStructures.pdb
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\PointsFileReader.pdb
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\Utils.pdb
+C:\TriangulationTopology\TriangulationTopology\obj\x64\Debug\TriangulationTopology.csprojResolveAssemblyReference.cache
+C:\TriangulationTopology\TriangulationTopology\obj\x64\Debug\TriangulationTopology.exe
+C:\TriangulationTopology\TriangulationTopology\obj\x64\Debug\TriangulationTopology.pdb
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\TriangulationTopology.exe.CodeAnalysisLog.xml
+C:\TriangulationTopology\TriangulationTopology\bin\x64\Debug\TriangulationTopology.exe.lastcodeanalysissucceeded

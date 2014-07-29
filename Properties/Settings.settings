@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TriangulationTopology.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="firstPtsFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Topology\pts1.txt</Value>
+    </Setting>
+    <Setting Name="secondPtsFile" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Topology\pts2.txt</Value>
+    </Setting>
+    <Setting Name="anglesThreshold" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="epsilon" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1E-05</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
