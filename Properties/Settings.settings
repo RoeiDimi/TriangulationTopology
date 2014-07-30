@@ -14,5 +14,11 @@
     <Setting Name="epsilon" Type="System.Double" Scope="User">
       <Value Profile="(Default)">1E-05</Value>
     </Setting>
+    <Setting Name="NumOfBuckets" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
+    <Setting Name="NumOfEpsilonInsertRetries" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

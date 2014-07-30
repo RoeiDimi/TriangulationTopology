@@ -37,153 +37,8 @@ namespace TriangulationTopology
 
         }
 
-        public static bool IsClockwisePolygon(Point[] polygon)
-        {
-            bool isClockwise = false;
-            double sum = 0;
-            for (int i = 0; i < polygon.Length - 1; i++)
-            {
-                sum += (polygon[i + 1].X - polygon[i].X) * (polygon[i + 1].Y + polygon[i].Y);
-            }
-
-            sum += (polygon[0].X - polygon[polygon.Length - 1].X) * (polygon[0].Y + polygon[polygon.Length - 1].Y);
-
-            isClockwise = (sum > 0) ? true : false;
-            return isClockwise;
-        }
-
-        public static void OrderClockWise(Triangle triangle)
-        {
-
-            if (IsClockwisePolygon(triangle._vertices))
-            {
-                //already ordered clockwise
-                return;
-            }
-
-            //try other combinations. original order - 123
-
-            //132
-            SwapVertices(triangle, 1, 2);
-            if (IsClockwisePolygon(triangle._vertices))
-            {
-                return;
-            }
-
-            //312
-            SwapVertices(triangle, 0, 1);
-            if (IsClockwisePolygon(triangle._vertices))
-            {
-                return;
-            }
-
-            //321
-            SwapVertices(triangle, 1, 2);
-            if (IsClockwisePolygon(triangle._vertices))
-            {
-                return;
-            }
-
-            //231
-            SwapVertices(triangle, 0, 1);
-            if (IsClockwisePolygon(triangle._vertices))
-            {
-                return;
-            }
-
-            //213
-            SwapVertices(triangle, 1, 2);
-            if (IsClockwisePolygon(triangle._vertices))
-            {
-                return;
-            }
-
-            throw new Exception("Error! no possible clockwise order was found for a triangle");
-
-        }
-
-        private static void SwapVertices(Triangle triangle, int index1, int index2)
-        {
-
-            Point temp = triangle._vertices[index1];
-            triangle._vertices[index1] = triangle._vertices[index2];
-            triangle._vertices[index2] = temp;
-
-        }
-
-
-        public static double CalculateMostProbableOrientation(
-            Dictionary<double, Tuple<Triangle, Triangle>> orientDiffToTrigs)
-        {
-
-            //divide into 20 buckets and find the most "crowded" bucket
-            int bucketsSize = (int) (orientDiffToTrigs.Keys.Max() - orientDiffToTrigs.Keys.Min()) / 20;
-
-            //bucket value to an array of orientations
-            Dictionary<int, List<double>> buckets = new Dictionary<int, List<double>>(20);
-            double[] orientations = orientDiffToTrigs.Keys.ToArray();
-
-            for (int i = 0; i < orientations.Length; i++)
-            {
-                double currentOrientation = orientations[i];
-                int bucketNum = (int) (Math.Abs(currentOrientation)/bucketsSize);
-
-                if (!buckets.ContainsKey(bucketNum))
-                {
-                    buckets.Add(bucketNum, new List<double>());
-                }
-
-                buckets[bucketNum].Add(currentOrientation);
-            }
-
-            //only now we can check and remove all the orientation diffs of the none one-to-one triangle tuples
-            //iterate threw the buckets and remove all the none one-to-ones
-            int[] bucketValues = buckets.Keys.ToArray();
-
-            List<double> mostCrowded = new List<double>();
-            List<double> currentBucket;
-            double currentOrient;
-            double iterativeOrient;
-
-            for (int i = 0; i < bucketValues.Length; i++)
-            {
-               currentBucket = buckets[i];
-
-                for (int j = 0; j < currentBucket.Count; j++)
-                {
-                    currentOrient = currentBucket[j];
-                    for (int k = 0; k < currentBucket.Count; k++)
-                    {
-                        iterativeOrient = currentBucket[k];
-                        if (currentOrient != iterativeOrient &&
-                            (orientDiffToTrigs[currentOrient].Item1 == orientDiffToTrigs[iterativeOrient].Item1 ||
-                             orientDiffToTrigs[currentOrient].Item1 == orientDiffToTrigs[iterativeOrient].Item2 ||
-                             orientDiffToTrigs[currentOrient].Item2 == orientDiffToTrigs[iterativeOrient].Item1 ||
-                             orientDiffToTrigs[currentOrient].Item2 == orientDiffToTrigs[iterativeOrient].Item2))
-                        {
-                            currentBucket.Remove(currentOrient);
-                        }
-                        
-                    }
-                }
-
-                //we already iterate threw all the items, lets find the most crowded
-                if (mostCrowded.Count < currentBucket.Count)
-                {
-                    mostCrowded = currentBucket;
-                }
-                
-            }
-
-            //return the median difference as the most probable orientation 
-            //TODO: naive algorithm - O(nlogn) can be implemented in O(n)
-            mostCrowded.Sort();
-            return mostCrowded[mostCrowded.Count/2];
-
-        }
-
         public static Dictionary<double, Tuple<Triangle, Triangle>> FilterAndCalculateOrientationDiff(Triangle[] triangles1,
-                                                                                       Triangle[] triangles2)
+                                                                                      Triangle[] triangles2)
         {
             int numOfTriangles1 = triangles1.Length;
             int numOfTriangles2 = triangles2.Length;
@@ -224,38 +79,10 @@ namespace TriangulationTopology
                         }
                         catch (ArgumentException)
                         {
+                            //maybe a pair of triangles with the same orientation diff already exist but its not the same triangles. add epsilon
+                            AddWithEpsilon(qualifiedPairs, qualifiedPairs[orientationDiff], currentTriangle1, currentTriangle2, orientationDiff);                            
 
-                            Tuple<Triangle, Triangle> existingTuple = qualifiedPairs[orientationDiff];
-                            if (
-                                !((existingTuple.Item1.Equals(currentTriangle1) &&
-                                   existingTuple.Item2.Equals(currentTriangle2))) ||
-                                (existingTuple.Item1.Equals(currentTriangle2) &&
-                                 existingTuple.Item2.Equals(currentTriangle1)))
-                            {
-                                //a pair of triangles with the same orientation diff already exist but its not the same triangles. add epsilon
-                                bool addOrientation = true;
-                                int numOfTries = 1;
-                                while (qualifiedPairs.ContainsKey(orientationDiff + numOfTries * _epsilon))
-                                {
-                                    numOfTries++;
-                                    if (numOfTries == 20)
-                                    {
-                                        addOrientation = false;
-                                    }
-                                }
-
-                                if (addOrientation)
-                                {
-                                    qualifiedPairs.Add(orientationDiff + numOfTries * _epsilon,
-                                                      new Tuple<Triangle, Triangle>(currentTriangle1, currentTriangle2));
-                                }
-                                
-                            }
-                            
                         }
-                        
-
-
 
                     }
                 }
@@ -263,6 +90,196 @@ namespace TriangulationTopology
 
             return qualifiedPairs;
         }
+
+        public static double CalculateMostProbableOrientation(Dictionary<double, Tuple<Triangle, Triangle>> orientDiffToTrigs)
+        {
+            Dictionary<int, List<double>> buckets = CreateOrientationsBuckets(orientDiffToTrigs.Keys.ToArray());
+
+            //only now we can check and remove all the orientation diffs of the none one-to-one triangle tuples
+            List<double> mostCrowded = GetMostCrowdedOneToOne(buckets, orientDiffToTrigs);
+
+            //return the median difference as the most probable orientation 
+            //TODO: naive algorithm - O(nlogn) can be implemented in O(n)
+            mostCrowded.Sort();
+            return mostCrowded[mostCrowded.Count / 2];
+
+        }
+
+        private static void AddWithEpsilon(Dictionary<double, Tuple<Triangle, Triangle>> orientDiffToTrigs, 
+                                Tuple<Triangle, Triangle> existingTuple, Triangle currentTriangle1, Triangle currentTriangle2, double orientationDiff)
+        {
+            if (!((existingTuple.Item1.Equals(currentTriangle1) && existingTuple.Item2.Equals(currentTriangle2))) ||
+                (existingTuple.Item1.Equals(currentTriangle2) && existingTuple.Item2.Equals(currentTriangle1)))
+            {
+                //a pair of triangles with the same orientation diff already exist but its not the same triangles. add epsilon
+                bool addOrientation = true;
+                int numOfTries = 1;
+                while (orientDiffToTrigs.ContainsKey(orientationDiff + numOfTries * _epsilon))
+                {
+                    numOfTries++;
+                    if (numOfTries == int.Parse(Settings.Default.Properties["NumOfEpsilonInsertRetries"].DefaultValue.ToString()))
+                    {
+                        addOrientation = false;
+                        break;
+                    }
+                }
+
+                if (addOrientation)
+                {
+                    orientDiffToTrigs.Add(orientationDiff + numOfTries * _epsilon,
+                                      new Tuple<Triangle, Triangle>(currentTriangle1, currentTriangle2));
+                }
+
+            }
+        }
+        private static bool IsClockwisePolygon(Point[] polygon)
+        {
+            bool isClockwise = false;
+            double sum = 0;
+            for (int i = 0; i < polygon.Length - 1; i++)
+            {
+                sum += (polygon[i + 1].X - polygon[i].X) * (polygon[i + 1].Y + polygon[i].Y);
+            }
+
+            sum += (polygon[0].X - polygon[polygon.Length - 1].X) * (polygon[0].Y + polygon[polygon.Length - 1].Y);
+
+            isClockwise = (sum > 0) ? true : false;
+            return isClockwise;
+        }
+
+        private static void OrderClockWise(Triangle triangle)
+        {
+
+            if (IsClockwisePolygon(triangle.Vertices))
+            {
+                //already ordered clockwise
+                return;
+            }
+
+            //try other combinations. original order - 123
+
+            //132
+            SwapVertices(triangle, 1, 2);
+            if (IsClockwisePolygon(triangle.Vertices))
+            {
+                return;
+            }
+
+            //312
+            SwapVertices(triangle, 0, 1);
+            if (IsClockwisePolygon(triangle.Vertices))
+            {
+                return;
+            }
+
+            //321
+            SwapVertices(triangle, 1, 2);
+            if (IsClockwisePolygon(triangle.Vertices))
+            {
+                return;
+            }
+
+            //231
+            SwapVertices(triangle, 0, 1);
+            if (IsClockwisePolygon(triangle.Vertices))
+            {
+                return;
+            }
+
+            //213
+            SwapVertices(triangle, 1, 2);
+            if (IsClockwisePolygon(triangle.Vertices))
+            {
+                return;
+            }
+
+            throw new Exception("Error! no possible clockwise order was found for a triangle");
+
+        }
+
+        private static void SwapVertices(Triangle triangle, int index1, int index2)
+        {
+
+            Point temp = triangle.Vertices[index1];
+            triangle.Vertices[index1] = triangle.Vertices[index2];
+            triangle.Vertices[index2] = temp;
+
+        }
+
+        private static Dictionary<int, List<double>> CreateOrientationsBuckets(double[] orientations)
+        {
+
+            
+            //divide into 20 buckets and find the most "crowded" bucket
+            int bucketsSize = (int)(orientations.Max() - orientations.Min()) / 
+                            int.Parse(Settings.Default.Properties["NumOfBuckets"].DefaultValue.ToString());
+
+            //bucket value to an array of orientations
+            Dictionary<int, List<double>> buckets = new Dictionary<int, List<double>>(20);
+
+            for (int i = 0; i < orientations.Length; i++)
+            {
+                double currentOrientation = orientations[i];
+                int bucketNum = (int)(Math.Abs(currentOrientation) / bucketsSize);
+
+                if (!buckets.ContainsKey(bucketNum))
+                {
+                    buckets.Add(bucketNum, new List<double>());
+                }
+
+                buckets[bucketNum].Add(currentOrientation);
+            }
+
+            return buckets;
+
+        }
+
+        private static List<double> GetMostCrowdedOneToOne(Dictionary<int, List<double>> buckets, 
+                                                                            Dictionary<double, Tuple<Triangle, Triangle>> orientDiffToTrigs)
+        {
+
+            //iterate through the buckets, remove all the none one-to-ones and find the most crowded
+            int[] bucketValues = buckets.Keys.ToArray();
+
+            List<double> mostCrowded = new List<double>();
+            List<double> currentBucket;
+            double currentOrient;
+            double iterativeOrient;
+
+            for (int i = 0; i < bucketValues.Length; i++)
+            {
+                currentBucket = buckets[i];
+
+                for (int j = 0; j < currentBucket.Count; j++)
+                {
+                    currentOrient = currentBucket[j];
+                    for (int k = 0; k < currentBucket.Count; k++)
+                    {
+                        iterativeOrient = currentBucket[k];
+                        if (currentOrient != iterativeOrient &&
+                            (orientDiffToTrigs[currentOrient].Item1 == orientDiffToTrigs[iterativeOrient].Item1 ||
+                             orientDiffToTrigs[currentOrient].Item1 == orientDiffToTrigs[iterativeOrient].Item2 ||
+                             orientDiffToTrigs[currentOrient].Item2 == orientDiffToTrigs[iterativeOrient].Item1 ||
+                             orientDiffToTrigs[currentOrient].Item2 == orientDiffToTrigs[iterativeOrient].Item2))
+                        {
+                            currentBucket.Remove(currentOrient);
+                        }
+
+                    }
+                }
+
+                //we already iterate threw all the items, lets find the most crowded
+                if (mostCrowded.Count < currentBucket.Count)
+                {
+                    mostCrowded = currentBucket;
+                }
+
+            }
+
+            return mostCrowded;
+        }
+
+       
 
     }
 }
