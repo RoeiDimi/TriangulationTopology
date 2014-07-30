@@ -37,6 +37,81 @@ namespace TriangulationTopology
 
         }
 
+        public static bool IsClockwisePolygon(Point[] polygon)
+        {
+            bool isClockwise = false;
+            double sum = 0;
+            for (int i = 0; i < polygon.Length - 1; i++)
+            {
+                sum += (polygon[i + 1].X - polygon[i].X) * (polygon[i + 1].Y + polygon[i].Y);
+            }
+
+            sum += (polygon[0].X - polygon[polygon.Length - 1].X) * (polygon[0].Y + polygon[polygon.Length - 1].Y);
+
+            isClockwise = (sum > 0) ? true : false;
+            return isClockwise;
+        }
+
+        public static void OrderClockWise(Triangle triangle)
+        {
+
+            if (IsClockwisePolygon(triangle._vertices))
+            {
+                //already ordered clockwise
+                return;
+            }
+
+            //try other combinations. original order - 123
+
+            //132
+            SwapVertices(triangle, 1, 2);
+            if (IsClockwisePolygon(triangle._vertices))
+            {
+                return;
+            }
+
+            //312
+            SwapVertices(triangle, 0, 1);
+            if (IsClockwisePolygon(triangle._vertices))
+            {
+                return;
+            }
+
+            //321
+            SwapVertices(triangle, 1, 2);
+            if (IsClockwisePolygon(triangle._vertices))
+            {
+                return;
+            }
+
+            //231
+            SwapVertices(triangle, 0, 1);
+            if (IsClockwisePolygon(triangle._vertices))
+            {
+                return;
+            }
+
+            //213
+            SwapVertices(triangle, 1, 2);
+            if (IsClockwisePolygon(triangle._vertices))
+            {
+                return;
+            }
+
+            throw new Exception("Error! no possible clockwise order was found for a triangle");
+
+        }
+
+        private static void SwapVertices(Triangle triangle, int index1, int index2)
+        {
+
+            Point temp = triangle._vertices[index1];
+            triangle._vertices[index1] = triangle._vertices[index2];
+            triangle._vertices[index2] = temp;
+
+        }
+
+
         public static double CalculateMostProbableOrientation(
             Dictionary<double, Tuple<Triangle, Triangle>> orientDiffToTrigs)
         {
@@ -122,10 +197,12 @@ namespace TriangulationTopology
             for (int i = 0; i < numOfTriangles1; i++)
             {
                 currentTriangle1 = triangles1[i];
+                OrderClockWise(currentTriangle1);
 
                 for (int j = 0; j < numOfTriangles2; j++)
                 {
                     currentTriangle2 = triangles2[j];
+                    OrderClockWise(currentTriangle2);
 
                     if ((Math.Abs(currentTriangle1.Angles[0] - currentTriangle2.Angles[0]) < angleMinDiff) &&
                         (Math.Abs(currentTriangle1.Angles[1] - currentTriangle2.Angles[1]) < angleMinDiff) &&
